@@ -169,21 +169,41 @@ tibble(
 Fit a linear regression model in which math score (`g4math`) is the outcome, and the predictors are class type (`kind`), race, and years spent in small classes (`yearssmall`). Fit this model to an object named `fit_cs`.
 
 ```{r}
+fit_cs <- linear_reg()|>
+  fit(g4math ~ kind + race + yearssmall, data = x)|>
+  tidy(conf.int = TRUE)
+
+fit_cs
 
 ```
 
 After fitting the model, run `fit_cs` and be sure to display the confidence intervals. 
 
-```{r}
 
-```
 
 Give the R code you used to fit your regression model to AI and ask it to create a LaTeX version of the regression equation that matches your model. Paste the LaTeX equation from AI below.
+$$
+\hat{g4math}_i = 695.0 
+- 1.95 \cdot \text{kind}_{\text{regular with aid},i} 
+- 7.66 \cdot \text{kind}_{\text{small},i} 
++ 38.7 \cdot \text{race}_{\text{others},i} 
++ 16.3 \cdot \text{race}_{\text{white},i} 
++ 2.18 \cdot \text{yearssmall}_i
+$$
 
 
 ## Marginal Effects
 
 Start writing summary paragraph. (AI may be helpful for individual sentences but won't give you a paragraph at once.)
+
+
+
+
+We fitted a linear regression model to predict Grade 4 math scores (g4math) based on the type of class (kind), students' race (race), and the number of years the student had attended a small class (yearssmall). The estimated intercept was 695.0, representing the expected math score for a student in a regular class without aid, in the reference race category, and with zero years in a small class.
+
+Compared to students in regular classes without aid, those in regular classes with aid scored 1.95 points lower on average, and those in small classes scored 7.66 points lower, though this latter effect was marginally insignificant. Students identified as White scored 16.3 points higher than the reference race group, while those classified as Other scored 38.7 points higher. Additionally, for each additional year in a small class, math scores increased by an average of 2.18 points. These results suggest that both race and time spent in smaller classes are important predictors of math performance.
+
+
 
 Generate predicted scores for all students in the data. What does each row in the output represent?
 
@@ -191,6 +211,24 @@ Generate predictions by class type (`kind`).
 
 Visualize average predicted math score by class type using `plot_predictions()`.
 
+
+
+
+```{r}
+# Step 1: Fit the model and save it
+model_cs <- linear_reg() |>
+  fit(g4math ~ kind + race + yearssmall, data = x)
+
+# Step 2: Tidy for viewing (optional)
+fit_cs <- tidy(model_cs, conf.int = TRUE)
+
+# Step 3: Use model_cs for predictions/marginal effects
+library(marginaleffects)
+predictions(model_cs , by = "kind")  # now it should work!
+
+
+plot_predictions(model_cs , by = "kind")
+```
 
 The default `plot_predictions()` plots can be boring or hard to read. To create your own custom plot, start by extracting the prediction data using the `draw = FALSE` option. Save the resulting tibble as `pred_data`. Run `pred_data` to see the output.
 
